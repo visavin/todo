@@ -1,27 +1,26 @@
 import './TaskList.css'
 import Task from "../Task";
 
-const TaskList = ({todo}) => {
+const TaskList = ({todo, onDeleted, onToggleCompleted}) => {
     const elements = todo.map((item) => {
-        const { id, status, description } = item
+        const { id, completed, editing, description } = item
         const editingTask = <input type="text" className="edit" value={description} />
         let classNames = ''
 
-        switch(status) {
-            case 'Completed':
-                classNames = 'completed'
-                break
-            case 'Editing':
-                classNames = 'editing'
-                break
-            default:
-                classNames = ''
-        }
+        if (editing) {
+            classNames = 'editing'
+        } else if (completed) {
+            classNames = 'completed'
+        } else classNames = ''
 
         return (
             <li key={id} className = {classNames}>
-                <Task description = {description} />
-                {status === 'Editing' ? editingTask : null}
+                <Task
+                    description = {description}
+                    onDeleted = {() => onDeleted(id)}
+                    onToggleCompleted = {() => onToggleCompleted(id)}
+                />
+                {editing ? editingTask : null}
             </li>
         )
     })
