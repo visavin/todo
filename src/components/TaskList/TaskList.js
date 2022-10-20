@@ -1,10 +1,9 @@
 import './TaskList.css'
 import Task from "../Task";
 
-const TaskList = ({todo, onDeleted, onToggleCompleted}) => {
+const TaskList = ({todo, onDeleted, onToggleCompleted, onToggleEditing, onEdited}) => {
     const elements = todo.map((item) => {
-        const { id, completed, editing, description } = item
-        const editingTask = <input type="text" className="edit" value={description} />
+        const { id, completed, editing, description, addDate } = item
         let classNames = ''
 
         if (editing) {
@@ -17,10 +16,14 @@ const TaskList = ({todo, onDeleted, onToggleCompleted}) => {
             <li key={id} className = {classNames}>
                 <Task
                     description = {description}
+                    addDate = {addDate}
+                    editing = {editing}
+                    completed = {completed}
                     onDeleted = {() => onDeleted(id)}
                     onToggleCompleted = {() => onToggleCompleted(id)}
+                    onToggleEditing = {() => onToggleEditing(id)}
+                    onEdited = {(newDescription) => onEdited(id, newDescription)}
                 />
-                {editing ? editingTask : null}
             </li>
         )
     })
