@@ -1,9 +1,34 @@
 import {Component} from "react";
+import PropTypes from "prop-types";
 import { formatDistanceToNow } from 'date-fns'
 
 import './Task.css'
 
 export default class Task extends Component {
+    static defaultProps = {
+        description: '',
+        addDate: new Date(),
+        editing: false,
+        completed: false,
+        onDeleted: () => {},
+        onToggleCompleted: () => {},
+        onToggleEditing: () => {},
+        onEdited: () => {},
+        onAdded: () => {},
+    }
+
+    static propTypes = {
+        description: PropTypes.string.isRequired,
+        addDate: PropTypes.instanceOf(Date).isRequired,
+        editing: PropTypes.bool,
+        completed: PropTypes.bool,
+        onDeleted: PropTypes.func,
+        onToggleCompleted: PropTypes.func,
+        onToggleEditing: PropTypes.func,
+        onEdited: PropTypes.func,
+        onAdded: PropTypes.func,
+    }
+
     state = {
         description: this.props.description,
     }

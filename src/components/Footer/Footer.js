@@ -1,9 +1,24 @@
 import {Component} from "react";
+import PropTypes from "prop-types";
 
 import './Footer.css'
 import TasksFilter from "../TasksFilter";
 
 export default class Footer extends Component {
+    static defaultProps = {
+        todoCount: 0,
+        statusFilter: 'All',
+        onDeleteCompleted: () => {},
+        onToggleStatus: () => {},
+    }
+
+    static propTypes = {
+        todoCount: PropTypes.number.isRequired,
+        statusFilter: PropTypes.string.isRequired,
+        onDeleteCompleted: PropTypes.func,
+        onToggleStatus: PropTypes.func,
+    }
+
     render() {
         return (
             <footer className="footer">

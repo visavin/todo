@@ -1,10 +1,12 @@
+import PropTypes from "prop-types";
+
 import './TaskList.css'
 import Task from "../Task";
 
 const TaskList = ({todo, onDeleted, onToggleCompleted, onToggleEditing, onEdited}) => {
     const elements = todo.map((item) => {
         const { id, completed, editing, description, addDate } = item
-        let classNames = ''
+        let classNames
 
         if (editing) {
             classNames = 'editing'
@@ -34,4 +36,21 @@ const TaskList = ({todo, onDeleted, onToggleCompleted, onToggleEditing, onEdited
         </ul>
     )
 }
+
+TaskList.defaultProps = {
+    todo: [],
+    onDeleted: () => {},
+    onToggleCompleted: () => {},
+    onToggleEditing: () => {},
+    onEdited: () => {},
+}
+
+TaskList.propTypes = {
+    todo: PropTypes.arrayOf(PropTypes.object).isRequired,
+    onDeleted: PropTypes.func,
+    onToggleCompleted: PropTypes.func,
+    onToggleEditing: PropTypes.func,
+    onEdited: PropTypes.func,
+}
+
 export default TaskList

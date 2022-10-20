@@ -112,7 +112,10 @@ export default class App extends Component {
 
         return (
             <section className="todoapp">
-                <NewTaskForm onAdded={this.addItem} />
+                <header className="header">
+                    <h1>todos</h1>
+                    <NewTaskForm onAdded={this.addItem} />
+                </header>
                 <section className="main">
                     <TaskList
                         todo = {this.todoFiltered()}
