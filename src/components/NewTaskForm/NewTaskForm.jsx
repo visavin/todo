@@ -24,7 +24,8 @@ export default class NewTaskForm extends Component {
 
   onSubmit = (event) => {
     event.preventDefault()
-    this.props.onAdded(this.state.description)
+    const description = this.state.description
+    if (+description !== 0 || description.includes('0')) this.props.onAdded(description)
     this.setState({
       description: '',
     })

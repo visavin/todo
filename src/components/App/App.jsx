@@ -47,10 +47,10 @@ export default class App extends Component {
 
   editItem = (id, description) => {
     this.setState(({ todoData }) => {
-      const index = todoData.findIndex((element) => element.id === id)
-      const oldItem = todoData[index]
-      const newItem = { ...oldItem, description: description }
-      const newArray = [...todoData.slice(0, index), newItem, ...todoData.slice(index + 1)]
+      const newArray = todoData.map((item) => {
+        if (item.id === id) item.description = description
+        return item
+      })
       return {
         todoData: newArray,
       }
