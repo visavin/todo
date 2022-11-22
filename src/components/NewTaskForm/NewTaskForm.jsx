@@ -14,33 +14,53 @@ export default class NewTaskForm extends Component {
 
   state = {
     description: '',
+    min: '',
+    sec: '',
   }
 
-  onChanged = (event) => {
+  onChanged = (name, event) => {
     this.setState({
-      description: event.target.value,
+      [name]: event.target.value,
     })
   }
 
   onSubmit = (event) => {
     event.preventDefault()
-    const description = this.state.description
-    if (+description !== 0 || description.includes('0')) this.props.onAdded(description)
+    const { description, min, sec } = this.state
+    const timer = +min * 60 + +sec
+    if (+description !== 0 || description.includes('0')) this.props.onAdded(description, timer)
     this.setState({
       description: '',
+      min: '',
+      sec: '',
     })
   }
 
   render() {
     return (
-      <form onSubmit={this.onSubmit}>
+      <form className="new-todo-form" onSubmit={this.onSubmit}>
         <input
           className="new-todo"
-          placeholder="What needs to be done?"
+          placeholder="Task"
           autoFocus
-          onInput={this.onChanged}
+          onInput={this.onChanged.bind(this, 'description')}
           value={this.state.description}
         />
+        <input
+          className="new-todo-form__timer"
+          placeholder="Min"
+          required
+          onInput={this.onChanged.bind(this, 'min')}
+          value={this.state.min}
+        />
+        <input
+          className="new-todo-form__timer"
+          placeholder="Sec"
+          required
+          onInput={this.onChanged.bind(this, 'sec')}
+          value={this.state.sec}
+        />
+        <input className="submit-btn" type="submit" />
       </form>
     )
   }

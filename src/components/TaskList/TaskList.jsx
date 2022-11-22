@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import './TaskList.css'
 import Task from '../Task'
 
-const TaskList = ({ todo, onDeleted, onToggleCompleted, onToggleEditing, onEdited }) => {
-  const elements = todo.map((item) => {
-    const { id, completed, editing, description, addDate } = item
+const TaskList = ({ todo, onDeleted, onToggleCompleted, onToggleEditing, onEdited, onstartTimer, onstopTimer }) => {
+  const elements = todo.map((item, index) => {
+    const { id, completed, editing, description, timer, timerId, addDate } = item
     let classNames
 
     if (editing) {
@@ -15,16 +15,20 @@ const TaskList = ({ todo, onDeleted, onToggleCompleted, onToggleEditing, onEdite
     } else classNames = ''
 
     return (
-      <li key={id} className={classNames}>
+      <li key={index} className={classNames}>
         <Task
           description={description}
+          timer={timer}
+          timerId={timerId}
           addDate={addDate}
           editing={editing}
           completed={completed}
           onDeleted={() => onDeleted(id)}
           onToggleCompleted={() => onToggleCompleted(id)}
           onToggleEditing={() => onToggleEditing(id)}
-          onEdited={(newDescription) => onEdited(id, newDescription)}
+          onEdited={(newDescription) => onEdited(id, 'description', newDescription)}
+          onstartTimer={() => onstartTimer(id)}
+          onstopTimer={() => onstopTimer(id)}
         />
       </li>
     )

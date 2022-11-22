@@ -7,22 +7,31 @@ import TaskList from '../TaskList'
 import Footer from '../Footer'
 
 export default class App extends Component {
+  getLocalStorage = () => {
+    const todo = window.localStorage.getItem('todoData')
+    if (todo) return JSON.parse(todo)
+    else
+      return [
+        this.createTodoItem('Task 1', 745),
+        this.createTodoItem('Task 2', 744),
+        this.createTodoItem('Task 3', 743),
+      ]
+  }
+
   state = {
-    todoData: [
-      this.createTodoItem('Task number 1'),
-      this.createTodoItem('Task number 2'),
-      this.createTodoItem('Task number 3'),
-    ],
+    todoData: this.getLocalStorage(),
     statusFilter: 'All',
   }
 
-  createTodoItem(description) {
+  createTodoItem(description, timer) {
     return {
       description,
+      timer,
+      timerId: '',
       completed: false,
       editing: false,
       id: uuid(),
-      addDate: new Date(),
+      addDate: JSON.parse(JSON.stringify(new Date())),
     }
   }
 
@@ -40,15 +49,16 @@ export default class App extends Component {
   }
 
   onToggleEditing = (id) => {
+    this.stopTimer(id)
     this.setState(({ todoData }) => ({
       todoData: this.toggleProperty(todoData, id, 'editing'),
     }))
   }
 
-  editItem = (id, description) => {
+  editItem = (id, key, value) => {
     this.setState(({ todoData }) => {
       const newArray = todoData.map((item) => {
-        if (item.id === id) item.description = description
+        if (item.id === id) item[key] = value
         return item
       })
       return {
@@ -57,8 +67,44 @@ export default class App extends Component {
     })
   }
 
-  addItem = (description) => {
-    const newItem = this.createTodoItem(description)
+  startTimer = (id) => {
+    this.setState(({ todoData }) => {
+      const newArray = todoData.map((item) => {
+        if (item.id === id) {
+          if (!item.timerId) {
+            item.timerId = setInterval(() => {
+              if (item.timer > 0) item.timer--
+              else this.stopTimer(item.id)
+              this.forceUpdate()
+              window.localStorage.setItem('todoData', JSON.stringify(this.state.todoData))
+            }, 1000)
+          }
+        }
+        return item
+      })
+      return {
+        todoData: newArray,
+      }
+    })
+  }
+
+  stopTimer = (id) => {
+    this.setState(({ todoData }) => {
+      const newArray = todoData.map((item) => {
+        if (item.id === id) {
+          if (item.timerId) clearInterval(item.timerId)
+          item.timerId = ''
+        }
+        return item
+      })
+      return {
+        todoData: newArray,
+      }
+    })
+  }
+
+  addItem = (description, timer) => {
+    const newItem = this.createTodoItem(description, timer)
     this.setState(({ todoData }) => {
       return {
         todoData: [...todoData, newItem],
@@ -100,6 +146,31 @@ export default class App extends Component {
     }
   }
 
+  // eslint-disable-next-line no-unused-vars
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevState.todoData !== this.state.todoData)
+      window.localStorage.setItem('todoData', JSON.stringify(this.state.todoData))
+  }
+
+  componentDidMount() {
+    this.setState(({ todoData }) => {
+      const newArray = todoData.map((item) => {
+        if (item.timerId) {
+          item.timerId = setInterval(() => {
+            if (item.timer > 0) item.timer--
+            else this.stopTimer(item.id)
+            this.forceUpdate()
+            window.localStorage.setItem('todoData', JSON.stringify(this.state.todoData))
+          }, 1000)
+        }
+        return item
+      })
+      return {
+        todoData: newArray,
+      }
+    })
+  }
+
   render() {
     const todoCount = this.state.todoData.filter((element) => !element.completed).length
 
@@ -116,6 +187,8 @@ export default class App extends Component {
             onToggleCompleted={this.onToggleCompleted}
             onToggleEditing={this.onToggleEditing}
             onEdited={this.editItem}
+            onstartTimer={this.startTimer}
+            onstopTimer={this.stopTimer}
           />
           <Footer
             todoCount={todoCount}

@@ -1,13 +1,13 @@
 import { Component } from 'react'
 import PropTypes from 'prop-types'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow, parseISO } from 'date-fns'
 
 import './Task.css'
 
 export default class Task extends Component {
   static defaultProps = {
     description: '',
-    addDate: new Date(),
+    addDate: '0',
     editing: false,
     completed: false,
     onDeleted: () => {},
@@ -19,7 +19,7 @@ export default class Task extends Component {
 
   static propTypes = {
     description: PropTypes.string.isRequired,
-    addDate: PropTypes.instanceOf(Date).isRequired,
+    addDate: PropTypes.string.isRequired,
     editing: PropTypes.bool,
     completed: PropTypes.bool,
     onDeleted: PropTypes.func,
@@ -45,8 +45,27 @@ export default class Task extends Component {
     this.props.onToggleEditing()
   }
 
+  toggleCompleted = () => {
+    this.props.onstopTimer()
+    this.props.onToggleCompleted()
+  }
+
+  componentWillUnmount() {
+    if (this.props.timerId) clearInterval(this.props.timerId)
+  }
+
   render() {
-    const { description, editing, completed, addDate, onDeleted, onToggleCompleted, onToggleEditing } = this.props
+    const { description, timer, editing, completed, addDate, onDeleted, onToggleEditing, onstartTimer, onstopTimer } =
+      this.props
+
+    let date
+
+    try {
+      date = parseISO(addDate)
+    } catch (error) {
+      console.log(error.message)
+    }
+
     const editingTask = (
       <form onSubmit={this.onSubmit}>
         <input type="text" className="edit" autoFocus onInput={this.onChanged} value={this.state.description} />
@@ -60,13 +79,20 @@ export default class Task extends Component {
             className="toggle"
             type="checkbox"
             defaultChecked={completed ? true : null}
-            onChange={onToggleCompleted}
+            onChange={this.toggleCompleted}
           />
           <label>
             <span className="description">{description}</span>
             <span className="created">
+              <button className="icon icon-play" onClick={onstartTimer}></button>
+              <button className="icon icon-pause" onClick={onstopTimer}></button>
+              <span>
+                {`${Math.floor(timer / 60)}:${String(timer % 60).length === 2 ? timer % 60 : '0' + (timer % 60)}`}
+              </span>
+            </span>
+            <span className="created">
               created{' '}
-              {formatDistanceToNow(addDate, {
+              {formatDistanceToNow(date, {
                 includeSeconds: true,
                 addSuffix: true,
               })}

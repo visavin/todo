@@ -57,6 +57,7 @@ label {
 }
 
 label .created {
+    position: relative;
     font-size: 13px;
     color: gray;
 }
@@ -69,7 +70,6 @@ label .description {
     font-weight: 400;
     color: #4d4d4d;
 }
-
 
 .icon {
     position: absolute;
@@ -103,6 +103,35 @@ label .description {
 
 .icon-edit:after {
     content: '✎';
+}
+
+.icon-pause,
+.icon-play {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.icon-play {
+    bottom: -8px;
+    font-size: 15px;
+}
+
+.icon-pause {
+    bottom: -5px;
+    left: 20px;
+}
+
+.created span {
+    margin-left: 48px;
+}
+
+.icon-pause:after {
+    content: '⏸';
+}
+
+.icon-play:after {
+    content: '▶';
 }
 
 .edit {
