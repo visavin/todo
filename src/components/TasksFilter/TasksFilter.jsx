@@ -1,37 +1,34 @@
-import { Component } from 'react'
-import './TasksFilter.css'
 import PropTypes from 'prop-types'
 
-export default class TasksFilter extends Component {
-  static defaultProps = {
-    statusFilter: 'All',
-    onToggleStatus: () => {},
-  }
+import './TasksFilter.css'
 
-  static propTypes = {
-    statusFilter: PropTypes.string.isRequired,
-    onToggleStatus: PropTypes.func,
-  }
+const TasksFilter = ({ statusFilter, onToggleStatus }) => {
+  const filters = ['All', 'Active', 'Completed']
 
-  state = {
-    filters: ['All', 'Active', 'Completed'],
-  }
+  const buttonItems = filters.map((item, index) => {
+    return (
+      <li key={index}>
+        <button
+          className={statusFilter === item ? 'selected' : null}
+          onClick={(event) => onToggleStatus(event.target.innerText)}
+        >
+          {item}
+        </button>
+      </li>
+    )
+  })
 
-  setFilter = (event) => {
-    this.props.onToggleStatus(event.target.innerText)
-  }
-
-  render() {
-    const buttonItems = this.state.filters.map((item, index) => {
-      return (
-        <li key={index}>
-          <button className={this.props.statusFilter === item ? 'selected' : null} onClick={this.setFilter}>
-            {item}
-          </button>
-        </li>
-      )
-    })
-
-    return <ul className="filters">{buttonItems}</ul>
-  }
+  return <ul className="filters">{buttonItems}</ul>
 }
+
+TasksFilter.defaultProps = {
+  statusFilter: 'All',
+  onToggleStatus: () => {},
+}
+
+TasksFilter.propTypes = {
+  statusFilter: PropTypes.string.isRequired,
+  onToggleStatus: PropTypes.func,
+}
+
+export default TasksFilter

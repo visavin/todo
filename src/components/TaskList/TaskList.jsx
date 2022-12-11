@@ -4,7 +4,7 @@ import './TaskList.css'
 import Task from '../Task'
 
 const TaskList = ({ todo, onDeleted, onToggleCompleted, onToggleEditing, onEdited, onstartTimer, onstopTimer }) => {
-  const elements = todo.map((item, index) => {
+  const elements = todo.map((item) => {
     const { id, completed, editing, description, timer, timerId, addDate } = item
     let classNames
 
@@ -15,7 +15,7 @@ const TaskList = ({ todo, onDeleted, onToggleCompleted, onToggleEditing, onEdite
     } else classNames = ''
 
     return (
-      <li key={index} className={classNames}>
+      <li key={id} className={classNames}>
         <Task
           description={description}
           timer={timer}
