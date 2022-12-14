@@ -5,13 +5,47 @@ import { formatDistanceToNow, parseISO } from 'date-fns'
 import './Task.css'
 
 const Task = (props) => {
+  const getLocalStorage = (id) => {
+    const taskData = window.localStorage.getItem('taskData')
+    if (taskData) {
+      const array = JSON.parse(taskData)
+      const item = array.find((element) => element.id === id)
+      if (item) {
+        return [].concat(item)
+      } else {
+        const newItem = createTaskData()
+        array.push(newItem)
+        window.localStorage.setItem('taskData', JSON.stringify(array))
+        return [].concat(newItem)
+      }
+    } else {
+      window.localStorage.setItem('taskData', JSON.stringify([createTaskData()]))
+      return [createTaskData()]
+    }
+  }
+
+  function createTaskData() {
+    return {
+      id: props.id,
+      addDate: new Date(),
+    }
+  }
+
   const [description, setDescription] = useState(props.description)
+  const [taskData] = useState(getLocalStorage(props.id)[0])
+  const [editing, setEditing] = useState(false)
 
   useEffect(() => {
     return () => {
       clearInterval(props.timerId)
     }
   }, [props.timerId])
+
+  useEffect(() => {
+    return () => {
+      // window.localStorage.removeItem('taskData')
+    }
+  }, [])
 
   const onChanged = (event) => {
     setDescription(event.target.value)
@@ -20,7 +54,7 @@ const Task = (props) => {
   const onSubmit = (event) => {
     event.preventDefault()
     props.onEdited(description)
-    props.onToggleEditing()
+    onToggleEditing()
   }
 
   const toggleCompleted = () => {
@@ -28,12 +62,19 @@ const Task = (props) => {
     props.onToggleCompleted()
   }
 
-  let date
+  const onToggleEditing = () => {
+    setEditing((prevState) => !prevState)
+    props.onToggleEditing()
+  }
 
-  try {
-    date = parseISO(props.addDate)
-  } catch (error) {
-    console.log(error.message)
+  const onDeleted = () => {
+    console.log('onItemDeleted')
+    const taskData = window.localStorage.getItem('taskData')
+    const array = JSON.parse(taskData)
+    const newArray = array.filter((item) => item.id !== props.id)
+    window.localStorage.setItem('taskData', JSON.stringify(newArray))
+    console.log(newArray)
+    props.onDeleted()
   }
 
   const editingTask = (
@@ -42,8 +83,18 @@ const Task = (props) => {
     </form>
   )
 
+  const date = parseISO(JSON.parse(JSON.stringify(taskData.addDate)))
+
+  let classNames
+
+  if (editing) {
+    classNames = 'editing'
+  } else if (props.completed) {
+    classNames = 'completed'
+  } else classNames = ''
+
   return (
-    <div>
+    <div className={classNames}>
       <div className="view">
         <input
           className="toggle"
@@ -54,7 +105,7 @@ const Task = (props) => {
         <label>
           <span className="description">{description}</span>
           <span className="created">
-            <button className="icon icon-play" onClick={props.onstartTimer}></button>
+            <button className="icon icon-play" onClick={!props.completed ? props.onstartTimer : null}></button>
             <button className="icon icon-pause" onClick={props.onstopTimer}></button>
             <span>
               {`${Math.floor(props.timer / 60)}:${
@@ -70,18 +121,16 @@ const Task = (props) => {
             })}
           </span>
         </label>
-        <button className="icon icon-edit" onClick={props.onToggleEditing}></button>
-        <button className="icon icon-destroy" onClick={props.onDeleted}></button>
+        <button className="icon icon-edit" onClick={onToggleEditing}></button>
+        <button className="icon icon-destroy" onClick={onDeleted}></button>
       </div>
-      {props.editing ? editingTask : null}
+      {editing ? editingTask : null}
     </div>
   )
 }
 
 Task.defaultProps = {
   description: '',
-  addDate: '0',
-  editing: false,
   completed: false,
   onDeleted: () => {},
   onToggleCompleted: () => {},
@@ -92,8 +141,6 @@ Task.defaultProps = {
 
 Task.propTypes = {
   description: PropTypes.string.isRequired,
-  addDate: PropTypes.string.isRequired,
-  editing: PropTypes.bool,
   completed: PropTypes.bool,
   onDeleted: PropTypes.func,
   onToggleCompleted: PropTypes.func,

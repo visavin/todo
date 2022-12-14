@@ -21,8 +21,10 @@ const NewTaskForm = ({ onAdded }) => {
   const onSubmit = (event) => {
     event.preventDefault()
     const { description, min, sec } = state
-    const timer = +min * 60 + +sec
-    if (+description !== 0 || description.includes('0')) onAdded(description, timer)
+    if (!isNaN(+min) && +min > 0 && !isNaN(+sec) && +sec > 0 && (+description !== 0 || description.includes('0'))) {
+      const timer = +min * 60 + +sec
+      onAdded(description, timer)
+    }
     setState(initialState)
   }
 

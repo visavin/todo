@@ -26,9 +26,8 @@ const App = () => {
       timer,
       timerId: '',
       completed: false,
-      editing: false,
+      // editing: false,
       id: uuid(),
-      addDate: JSON.parse(JSON.stringify(new Date())),
     }
   }
 
@@ -45,7 +44,7 @@ const App = () => {
 
   const onToggleEditing = (id) => {
     stopTimer(id)
-    setTodoData((prevState) => toggleProperty(prevState, id, 'editing'))
+    // setTodoData((prevState) => toggleProperty(prevState, id, 'editing'))
   }
 
   const editItem = (id, key, value) => {
