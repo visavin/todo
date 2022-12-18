@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { formatDistanceToNow, parseISO } from 'date-fns'
 
 import './Task.css'
+import Timer from '../Timer'
 
 const Task = (props) => {
   const getLocalStorage = (id) => {
@@ -34,6 +35,7 @@ const Task = (props) => {
   const [description, setDescription] = useState(props.description)
   const [taskData] = useState(getLocalStorage(props.id)[0])
   const [editing, setEditing] = useState(false)
+  const [delTimer, setDelTimer] = useState(false)
 
   useEffect(() => {
     return () => {
@@ -42,10 +44,14 @@ const Task = (props) => {
   }, [props.timerId])
 
   useEffect(() => {
-    return () => {
-      // window.localStorage.removeItem('taskData')
+    if (delTimer) {
+      props.onDeleted()
+      const taskData = window.localStorage.getItem('taskData')
+      const array = JSON.parse(taskData)
+      const newArray = array.filter((item) => item.id !== props.id)
+      window.localStorage.setItem('taskData', JSON.stringify(newArray))
     }
-  }, [])
+  }, [delTimer])
 
   const onChanged = (event) => {
     setDescription(event.target.value)
@@ -58,23 +64,15 @@ const Task = (props) => {
   }
 
   const toggleCompleted = () => {
-    props.onstopTimer()
     props.onToggleCompleted()
   }
 
   const onToggleEditing = () => {
     setEditing((prevState) => !prevState)
-    props.onToggleEditing()
   }
 
   const onDeleted = () => {
-    console.log('onItemDeleted')
-    const taskData = window.localStorage.getItem('taskData')
-    const array = JSON.parse(taskData)
-    const newArray = array.filter((item) => item.id !== props.id)
-    window.localStorage.setItem('taskData', JSON.stringify(newArray))
-    console.log(newArray)
-    props.onDeleted()
+    setDelTimer(true)
   }
 
   const editingTask = (
@@ -105,13 +103,7 @@ const Task = (props) => {
         <label>
           <span className="description">{description}</span>
           <span className="created">
-            <button className="icon icon-play" onClick={!props.completed ? props.onstartTimer : null}></button>
-            <button className="icon icon-pause" onClick={props.onstopTimer}></button>
-            <span>
-              {`${Math.floor(props.timer / 60)}:${
-                String(props.timer % 60).length === 2 ? props.timer % 60 : '0' + (props.timer % 60)
-              }`}
-            </span>
+            <Timer id={props.id} completed={props.completed} timer={props.timer} delTimer={delTimer} />
           </span>
           <span className="created">
             created{' '}
@@ -131,22 +123,21 @@ const Task = (props) => {
 
 Task.defaultProps = {
   description: '',
+  timer: 0,
   completed: false,
   onDeleted: () => {},
   onToggleCompleted: () => {},
-  onToggleEditing: () => {},
   onEdited: () => {},
-  onAdded: () => {},
 }
 
 Task.propTypes = {
+  id: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
+  timer: PropTypes.number,
   completed: PropTypes.bool,
   onDeleted: PropTypes.func,
   onToggleCompleted: PropTypes.func,
-  onToggleEditing: PropTypes.func,
   onEdited: PropTypes.func,
-  onAdded: PropTypes.func,
 }
 
 export default Task

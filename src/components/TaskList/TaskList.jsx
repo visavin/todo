@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import './TaskList.css'
 import Task from '../Task'
 
-const TaskList = ({ todo, onDeleted, onToggleCompleted, onToggleEditing, onEdited, onstartTimer, onstopTimer }) => {
+const TaskList = ({ todo, onDeleted, onToggleCompleted, onEdited }) => {
   const elements = todo.map((item) => {
-    const { id, completed, editing, description, timer, timerId } = item
+    const { id, completed, description, timer } = item
 
     return (
       <li key={id}>
@@ -13,15 +13,10 @@ const TaskList = ({ todo, onDeleted, onToggleCompleted, onToggleEditing, onEdite
           id={id}
           description={description}
           timer={timer}
-          timerId={timerId}
-          editing={editing}
           completed={completed}
           onDeleted={() => onDeleted(id)}
           onToggleCompleted={() => onToggleCompleted(id)}
-          onToggleEditing={() => onToggleEditing(id)}
           onEdited={(newDescription) => onEdited(id, 'description', newDescription)}
-          onstartTimer={() => onstartTimer(id)}
-          onstopTimer={() => onstopTimer(id)}
         />
       </li>
     )
@@ -34,7 +29,6 @@ TaskList.defaultProps = {
   todo: [],
   onDeleted: () => {},
   onToggleCompleted: () => {},
-  onToggleEditing: () => {},
   onEdited: () => {},
 }
 
@@ -42,7 +36,6 @@ TaskList.propTypes = {
   todo: PropTypes.arrayOf(PropTypes.object).isRequired,
   onDeleted: PropTypes.func,
   onToggleCompleted: PropTypes.func,
-  onToggleEditing: PropTypes.func,
   onEdited: PropTypes.func,
 }
 
