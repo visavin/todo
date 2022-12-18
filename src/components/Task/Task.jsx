@@ -38,6 +38,10 @@ const Task = (props) => {
   const [delTimer, setDelTimer] = useState(false)
 
   useEffect(() => {
+    if (props.deleteStatus) onDeleted()
+  }, [props.deleteStatus])
+
+  useEffect(() => {
     return () => {
       clearInterval(props.timerId)
     }
@@ -125,6 +129,7 @@ Task.defaultProps = {
   description: '',
   timer: 0,
   completed: false,
+  deleteStatus: false,
   onDeleted: () => {},
   onToggleCompleted: () => {},
   onEdited: () => {},
@@ -135,6 +140,7 @@ Task.propTypes = {
   description: PropTypes.string.isRequired,
   timer: PropTypes.number,
   completed: PropTypes.bool,
+  deleteStatus: PropTypes.bool,
   onDeleted: PropTypes.func,
   onToggleCompleted: PropTypes.func,
   onEdited: PropTypes.func,

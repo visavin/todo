@@ -23,6 +23,7 @@ const App = () => {
       timer,
       completed: false,
       id: uuid(),
+      deleteStatus: false,
     }
   }
 
@@ -35,6 +36,10 @@ const App = () => {
 
   const onToggleCompleted = (id) => {
     setTodoData((prevState) => toggleProperty(prevState, id, 'completed'))
+  }
+
+  const onToggleDeleted = (id) => {
+    setTodoData((prevState) => toggleProperty(prevState, id, 'deleteStatus'))
   }
 
   const editItem = (id, key, value) => {
@@ -55,7 +60,8 @@ const App = () => {
   }
 
   const deleteCompleted = () => {
-    setTodoData((prevState) => prevState.filter((item) => !item.completed))
+    todoData.filter((item) => item.completed).forEach((item) => onToggleDeleted(item.id))
+    // setTodoData((prevState) => prevState.filter((item) => !item.completed))
   }
 
   const onToggleStatus = (status) => {

@@ -42,8 +42,7 @@ const Timer = (props) => {
     window.localStorage.setItem('timerData', JSON.stringify(array.filter((element) => element.id !== id)))
   }
 
-  function tick(id = props.id) {
-    console.log('tick= ', id, ' timerId= ', timerData.timerId)
+  function tick() {
     if (timerData.viewTimer > 0) setTimer('viewTimer', timerData.endDate - Math.floor(Date.now() / 1000))
     else onStopTimer()
   }
@@ -76,7 +75,6 @@ const Timer = (props) => {
   }
 
   useEffect(() => {
-    console.log('mount/ viewTimer= ', timerData.viewTimer)
     if (timerData.endDate) {
       if (timerData.endDate - Math.floor(Date.now() / 1000) > 0)
         setTimer('viewTimer', timerData.endDate - Math.floor(Date.now() / 1000))
@@ -84,7 +82,6 @@ const Timer = (props) => {
         // timerData.viewTimer = 0
         setTimer('viewTimer', 0)
         onStopTimer()
-        console.log('viewTimer= ', timerData.viewTimer)
       }
     }
 
@@ -93,23 +90,16 @@ const Timer = (props) => {
       setTimer('timerId', newTimerId)
     }
     return () => {
-      console.log('clearInterval ', timerData.timerId)
       clearInterval(timerData.timerId)
     }
   }, [])
 
   useEffect(() => {
     if (props.delTimer) deleteTimerData()
-    return () => {
-      // window.localStorage.removeItem('taskData')
-    }
   }, [props.delTimer])
 
   useEffect(() => {
     if (props.completed) onStopTimer()
-    return () => {
-      // window.localStorage.removeItem('taskData')
-    }
   }, [props.completed])
 
   return (
